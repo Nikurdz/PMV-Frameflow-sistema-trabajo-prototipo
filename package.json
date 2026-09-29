@@ -1,0 +1,15 @@
+{
+  "name": "frameflow-pmv-prototipo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Frameflow · Prototipo clicable (PMV) responsivo. Emprendimiento Tecnológico, NRC 2667, PUCE. Elaborado por David Tapia.",
+  "scripts": {
+    "start": "npx serve .",
+    "test": "node tests/e2e.mjs && node tests/responsive.mjs",
+    "test:e2e": "node tests/e2e.mjs",
+    "test:responsive": "node tests/responsive.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.56.1"
+  }
+}

@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Frameflow · Publica tu oficio y consigue clientes en Quito</title>
+  <meta name="description" content="Prototipo clicable de Frameflow: publica tu oficio gratis y consigue clientes nuevos en Quito. Contacto directo por WhatsApp, sin comisiones.">
+  <meta name="theme-color" content="#1D5FD1">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231D5FD1'/%3E%3Cpath d='M11 9h11v3.5h-7v2.5h6v3.5h-6V24h-4z' fill='white'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/views.css">
+</head>
+<body>
+  <a class="skip-link" href="#app">Saltar al contenido</a>
+
+  <header class="topbar" id="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="#/" aria-label="Frameflow, ir al inicio">
+        <span class="brand-mark" aria-hidden="true">F</span>
+        <span class="brand-name">Frameflow</span>
+      </a>
+      <nav class="desktop-nav" id="desktop-nav" aria-label="Menú principal"></nav>
+    </div>
+  </header>
+
+  <main id="app" tabindex="-1"></main>
+
+  <footer class="site-footer" id="site-footer">
+    <p><strong>Frameflow</strong> · Prototipo clicable (PMV) · Datos de ejemplo</p>
+    <p>Emprendimiento Tecnológico · NRC 2667 · PUCE · Elaborado por David Tapia</p>
+  </footer>
+
+  <nav class="bottom-nav" id="bottom-nav" aria-label="Menú principal"></nav>
+
+  <div id="sheet-root"></div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <div id="observer-root"></div>
+
+  <script src="js/config.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/validators.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/observer.js"></script>
+  <script src="js/views/inicio.js"></script>
+  <script src="js/views/registro.js"></script>
+  <script src="js/views/publicado.js"></script>
+  <script src="js/views/servicios.js"></script>
+  <script src="js/views/perfil.js"></script>
+  <script src="js/views/cierre.js"></script>
+  <script src="js/views/explorar.js"></script>
+  <script src="js/views/oficios.js"></script>
+  <script src="js/views/comofunciona.js"></script>
+  <script src="js/router.js"></script>
+</body>
+</html>
