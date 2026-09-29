@@ -237,7 +237,7 @@ section("3. Presentación en escritorio 1280×800");
   await shot(page, "d-inicio");
 
   await page.locator("#desktop-nav").getByRole("link", { name: "Explorar" }).click();
-  await page.waitForSelector(".result");
+  await page.waitForSelector("#f-q");
   const total = await page.evaluate(() => FF.data.providers.length);
   const firstPage = await page.locator(".result").count();
   ok("Explorar: ≥ 30 prestadores de ejemplo y máximo 20 tarjetas por página", total >= 30 && firstPage === 20, `total=${total} tarjetas=${firstPage}`);
@@ -436,7 +436,7 @@ section("4. Presentación en móvil 360×800");
   await shot(page, "m-inicio");
 
   await page.locator("#bottom-nav").getByRole("link", { name: "Explorar" }).click();
-  await page.waitForSelector(".result");
+  await page.waitForSelector("#f-q");
   ok("Filtros ocultos hasta pulsar 'Filtros'", !(await visible(page, "#filters")) && (await visible(page, "#f-open")));
   await audit(page, "Explorar");
   await shot(page, "m-explorar");

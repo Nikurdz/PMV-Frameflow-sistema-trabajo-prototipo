@@ -93,7 +93,7 @@ Requieren Node 18+ y Playwright con Chromium (`npm i -D playwright && npx playwr
 
 ```bash
 npm test                 # las dos suites
-npm run test:e2e         # 154 comprobaciones: flujo PMV, Explorar, filtros, contacto, contraste y tamaños táctiles
+npm run test:e2e         # 192 comprobaciones: flujo PMV, oficios múltiples, Explorar y páginas, opiniones, edición, fotos, contraste y tamaños táctiles
 npm run test:responsive  # 14 tamaños de pantalla × 15 rutas × 2 modos
 ```
 
