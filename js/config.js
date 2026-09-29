@@ -4,7 +4,7 @@ window.FF = window.FF || {};
 FF.config = {
   /* Número de WhatsApp del equipo, en formato internacional y sin "+" (ej. "593998765432").
      Si se deja vacío, WhatsApp abre el selector de chats con el mensaje ya escrito. */
-  WHATSAPP_EQUIPO: "",
+  WHATSAPP_EQUIPO: "593995961669",
 
   /* Enlace público del prototipo que se envía en "Recomendar a otra persona".
      Si se deja vacío se calcula desde la URL actual, en modo prueba (?pmv=1). */

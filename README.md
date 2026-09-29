@@ -36,7 +36,7 @@ La regla del curso (R-02) exige **tres características, ni una más**, para la 
 Inicio ─┬─ Crear mi perfil ─ Paso 1 oficio ─ Paso 2 datos ─ Paso 3 WhatsApp ─ Perfil publicado
         │                                                        ├─ Agregar servicios ─┐
         │                                                        └─ Omitir ────────────┴─ Vista del cliente ─ Cierre (WhatsApp)
-        └─ Busco un trabajador ─ Explorar ─ Detalle del prestador ─ Contactar (hoja con el mensaje)
+        └─ Busco un trabajador ─ Explorar ─ Detalle del prestador ─ Contactar ─ Cierre (WhatsApp)
 Menú general: Inicio · Explorar · Oficios · Mi perfil · Cómo funciona
 ```
 
@@ -44,13 +44,13 @@ Los campos **aceptan escritura real** y validan (nombre y apellido; WhatsApp `09
 
 ## Datos de ejemplo
 
-Los **33 prestadores** de Explorar son ficticios y genéricos (17 oficios, 4 zonas). Sus calificaciones y cantidad de trabajos son de muestra (las reseñas reales son fase Futura, RF-29). Las fotos son cuadros de reemplazo: **no hay imágenes de IA ni de terceros** (RN-05). Los prestadores de ejemplo **no tienen teléfono**: "Contactar" muestra el mensaje que se enviaría, para que el prototipo nunca escriba a una persona real. Solo la pantalla 8 abre enlaces `wa.me` reales.
+Los **33 prestadores** de Explorar son ficticios y genéricos (17 oficios, 4 zonas). Sus calificaciones y cantidad de trabajos son de muestra (las reseñas reales son fase Futura, RF-29). Las fotos son cuadros de reemplazo: **no hay imágenes de IA ni de terceros** (RN-05). Los prestadores de ejemplo **no tienen teléfono**: "Contactar por WhatsApp" lleva a la pantalla "¿Quieres probar la app real?", para que el prototipo nunca escriba a una persona real. Solo esa pantalla abre enlaces `wa.me` reales.
 
 ## Configuración (`js/config.js`)
 
 | Constante | Qué hacer |
 |---|---|
-| `WHATSAPP_EQUIPO` | **Pendiente:** número del equipo en formato internacional sin `+` (ej. `593998765432`). Vacío = WhatsApp deja elegir el chat. Queda visible en el código público (limitación L-07). |
+| `WHATSAPP_EQUIPO` | Número del equipo en formato internacional sin `+` (hoy `593995961669`). Vacío = WhatsApp deja elegir el chat. Queda visible en el código público (limitación L-07). |
 | `PROTOTYPE_URL` | Enlace público del prototipo para "Recomendar a otra persona". Vacío = se calcula desde la URL actual con `?pmv=1`. |
 
 ## Diseño y accesibilidad

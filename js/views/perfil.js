@@ -71,6 +71,7 @@ FF.views = FF.views || {};
           '<p class="muted">Puede que ya no esté disponible.</p><a class="btn btn-primary" href="#/explorar">Ver prestadores</a></div></section>';
       }
       document.title = p.nombre + " · " + FF.data.oficioNombre(p) + " · Frameflow";
+      FF.state.lastProvider = p;   // la pantalla de cierre usa su oficio en el mensaje
       var cta = '<button type="button" class="btn btn-wa btn-block" id="contact">' + ui.icon("chat") + ' Contactar por WhatsApp</button>' +
         '<div class="contact-tools">' +
           '<button type="button" class="btn btn-text btn-sm" id="share">' + ui.icon("share", "icon-sm") + ' Compartir</button>' +
@@ -84,18 +85,8 @@ FF.views = FF.views || {};
     },
     mount: function (root, route) {
       var p = FF.views.prestador.resolve(route); if (!p) return;
-      var contact = root.querySelector("#contact");
-      contact.addEventListener("click", function () {
-        var msg = ui.contactMessage(p);
-        var sheet = ui.openSheet(
-          '<h2>Contactar a ' + esc(p.nombre) + '</h2>' +
-          '<p class="muted">Este mensaje ya viene escrito para enviarse por WhatsApp:</p>' +
-          '<blockquote class="quote">' + esc(msg) + '</blockquote>' +
-          '<p class="small muted demo-note">' + ui.icon("info", "icon-sm") + ' Demostración: en la app real se abre WhatsApp aquí, con este mensaje. Los prestadores de ejemplo no tienen número.</p>' +
-          '<div class="sheet-actions"><button type="button" class="btn btn-secondary" data-copy>Copiar mensaje</button>' +
-          '<button type="button" class="btn btn-primary" data-sheet-close="btn">Entendido</button></div>', "Contactar por WhatsApp");
-        sheet.querySelector("[data-copy]").addEventListener("click", function () { ui.copy(msg, "Mensaje copiado"); });
-      });
+      // El contacto de cualquier prestador lleva a la pantalla de compromiso (pantalla 8)
+      root.querySelector("#contact").addEventListener("click", function () { location.hash = "#/cierre"; });
       root.querySelector("#share").addEventListener("click", function () {
         ui.copy(location.href, "Enlace del perfil copiado");
       });

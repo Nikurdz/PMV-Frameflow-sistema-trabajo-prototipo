@@ -14,7 +14,9 @@ window.FF = window.FF || {};
     servicios: [],          // nombres de servicios elegidos (incluye "A domicilio" / "En mi local")
     fotos: [null, null, null], // URLs locales de las fotos elegidas (solo en memoria)
     profile: null,          // perfil publicado
-    filters: defaultFilters()
+    filters: defaultFilters(),
+    lastProvider: null,     // último prestador visto (para el mensaje de la pantalla de cierre)
+    lastExplorar: ""
   };
 
   function safeGet() { try { return window.localStorage.getItem(KEY); } catch (e) { return null; } }
@@ -58,7 +60,7 @@ window.FF = window.FF || {};
 
     reset: function () {
       state.reg = emptyReg(); state.servicios = []; state.fotos = [null, null, null]; state.profile = null;
-      state.filters = defaultFilters();
+      state.filters = defaultFilters(); state.lastProvider = null;
       safeDel();
     },
 

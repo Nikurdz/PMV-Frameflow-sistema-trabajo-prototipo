@@ -191,23 +191,6 @@ for (const [w, h] of VIEWPORTS) {
         await page.keyboard.press("Escape");
       }
 
-      // H. Hoja modal de contacto: botones dentro de pantalla y sin scroll de página
-      await visit(page, "#/prestador/p13", false);
-      await page.locator("#contact").click();
-      await page.waitForTimeout(300);
-      const sheetIssues = await page.evaluate(() => {
-        const out = [], vw = innerWidth, vh = innerHeight, sh = document.querySelector(".sheet");
-        if (!sh) return ["la hoja de contacto no se abrió"];
-        for (const b of sh.querySelectorAll("button")) {
-          b.scrollIntoView({ block: "center" });
-          const r = b.getBoundingClientRect(), hit = document.elementFromPoint(r.left + r.width / 2, Math.min(Math.max(r.top + r.height / 2, 1), vh - 1));
-          if (r.left < 0 || r.right > vw || r.top < 0 || r.bottom > vh || !(b.contains(hit) || hit.contains(b))) out.push(`«${b.textContent.trim()}» de la hoja no es alcanzable`);
-        }
-        return out;
-      });
-      report(vp, "hoja de contacto", sheetIssues);
-      await page.keyboard.press("Escape");
-
       if (SHOTS) for (const [r, n] of [["#/", "inicio"], ["#/explorar", "explorar"], ["#/prestador/p13", "detalle"]]) {
         await visit(page, r, false); await page.screenshot({ path: path.join(SHOTS, `r-${n}-${vp}.png`) });
       }

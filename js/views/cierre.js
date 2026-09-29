@@ -4,16 +4,15 @@ FF.views = FF.views || {};
 
 FF.views.cierre = {
   title: "¿Quieres probar la app real? · Frameflow",
-  needsProfile: true,
 
   render: function () {
-    var ui = FF.ui, cfg = FF.config, p = FF.store.own();
-    var oficio = FF.data.oficioNombre(p);
+    var ui = FF.ui, cfg = FF.config, p = FF.store.own() || FF.state.lastProvider;
+    var oficio = p ? FF.data.oficioNombre(p) : "";
     var interes = FF.waLink(cfg.WHATSAPP_EQUIPO, cfg.MSG_INTERES + oficio);
     var recomendar = FF.waLink("", cfg.MSG_RECOMENDAR + " " + FF.prototypeUrl());
     var extra = FF.mode.pmv
       ? ""
-      : '<a class="btn btn-text btn-block" href="#/explorar">Ir a explorar prestadores</a>';
+      : '<a class="btn btn-text btn-block" href="' + ui.esc(FF.state.lastExplorar || "#/explorar") + '">Ir a explorar prestadores</a>';
     return '<section class="view narrow closing">' +
       '<div class="closing-ic" aria-hidden="true">' + ui.icon("chat", "icon-xl") + '</div>' +
       '<h1 tabindex="-1">¿Quieres probar la app real?</h1>' +
