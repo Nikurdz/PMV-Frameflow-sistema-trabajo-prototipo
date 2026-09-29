@@ -110,6 +110,13 @@ window.FF = window.FF || {};
     ["Fanny Ojeda", "otro", "valles", "a", ["Trabajos por encargo", "Asesoría y cotización"], 6, 4.3, 15, 4, "Jardinería"]
   ];
 
+  /* Segundo (o tercer) oficio de algunos prestadores de ejemplo */
+  var EXTRA = {
+    "Luis Quishpe": ["albanil"], "Byron Chiliquinga": ["carpintero"], "Wilson Caiza": ["pintor"],
+    "Andrés Proaño": ["plomero"], "Daniela Quispe": ["maquillador"], "Verónica Lasso": ["maquillador", "manicurista"],
+    "Sebastián Robalino": ["yoga"]
+  };
+
   var oficioById = {}; OFICIOS.forEach(function (o) { oficioById[o.id] = o; });
   var zonaById = {}; ZONAS.forEach(function (z) { zonaById[z.id] = z; });
 
@@ -117,7 +124,7 @@ window.FF = window.FF || {};
 
   var PROVIDERS = RAW.map(function (r, i) {
     return {
-      id: "p" + (i + 1), nombre: r[0], oficio: r[1], zona: r[2], modalidad: MOD[r[3]], servicios: r[4],
+      id: "p" + (i + 1), nombre: r[0], oficio: r[1], oficios: [r[1]].concat(EXTRA[r[0]] || []), zona: r[2], modalidad: MOD[r[3]], servicios: r[4],
       anios: r[5], rating: r[6], trabajos: r[7], fotos: r[8], oficioLabel: r[9] || ""
     };
   });
@@ -126,10 +133,22 @@ window.FF = window.FF || {};
     groups: GROUPS, oficios: OFICIOS, zonas: ZONAS, modalidades: MODALIDADES, servicios: SERVICIOS, providers: PROVIDERS,
     oficio: function (id) { return oficioById[id]; },
     zona: function (id) { return zonaById[id]; },
-    oficioNombre: function (p) {
-      if (p.oficio === "otro") return p.oficioLabel || "Otro servicio";
-      return oficioById[p.oficio] ? oficioById[p.oficio].nombre : "";
+    nombreDeOficio: function (id, p) {
+      if (id === "otro") return (p && p.oficioLabel) || "Otro servicio";
+      return oficioById[id] ? oficioById[id].nombre : "";
     },
+    /* Oficio principal (el primero que eligió) */
+    oficioNombre: function (p) { return FF.data.nombreDeOficio(p.oficio, p); },
+    /* Todos sus oficios, el principal primero */
+    oficiosNombres: function (p) {
+      return (p.oficios && p.oficios.length ? p.oficios : [p.oficio]).map(function (id) { return FF.data.nombreDeOficio(id, p); });
+    },
+    /* "Plomero +1" para tarjetas */
+    oficioResumen: function (p) {
+      var n = p.oficios ? p.oficios.length : 1;
+      return FF.data.oficioNombre(p) + (n > 1 ? " +" + (n - 1) : "");
+    },
+    tieneOficio: function (p, id) { return (p.oficios || [p.oficio]).indexOf(id) >= 0; },
     zonaLargo: function (id) { return zonaById[id] ? zonaById[id].largo : ""; },
     pitch: function (oficioId) { var o = oficioById[oficioId]; return o ? PITCH[o.grupo] : ""; },
     modalidadTexto: function (arr) {

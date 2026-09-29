@@ -34,14 +34,18 @@ const VIEWPORTS = [
 /* Rutas del modo presentación. El estado del perfil se crea antes para que todas se puedan abrir. */
 const ROUTES = [
   "#/", "#/explorar", "#/explorar?zona=norte&mod=domicilio&min=4", "#/explorar?q=zzzz", "#/oficios", "#/como-funciona", "#/mi-perfil",
-  "#/prestador/p13", "#/registro/1", "#/registro/2", "#/registro/3", "#/publicado", "#/servicios", "#/vista", "#/cierre"
+  "#/prestador/p13", "#/prestador/yo", "#/explorar?pag=2", "#/mi-perfil/editar", "#/registro/1", "#/registro/2", "#/registro/3", "#/publicado", "#/servicios", "#/vista", "#/cierre"
 ];
 const PMV_ROUTES = ["#/", "#/registro/1", "#/registro/2", "#/registro/3", "#/publicado", "#/servicios", "#/vista", "#/cierre"];
 
 const settled = () => !window.FF || !FF.rendered || FF.rendered === location.hash;
 const setProfile = () => {
-  FF.state.reg = { oficio: "manicurista", oficioOtro: "", nombre: "Camila Andrade", zona: "norte", whatsapp: "0998765432" };
+  FF.state.reg = { oficios: ["manicurista", "maquillador", "peluquero", "masajista", "barbero"], oficioOtro: "", nombre: "Camila Andrade", zona: "norte", whatsapp: "0998765432" };
   FF.store.publish();
+  // 12 fotos: la cuadrícula y la galería deben resistir el tope
+  const png = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==";
+  FF.state.fotos = Array(12).fill(png);
+  FF.reviews.add("yo", { autor: "Marcos Villacís Ordóñez de la Torre", estrellas: 4, trabajo: "Instalación completa de cocina con acabados", texto: "Un comentario largo para comprobar que el texto se ajusta a la pantalla sin desbordar en ningún tamaño. " .repeat(2) });
 };
 
 /* Comprobación dentro de la página. Devuelve la lista de problemas encontrados. */
@@ -83,7 +87,7 @@ function inspect({ route, pmv }) {
   });
 
   // C + D. Elementos interactivos dentro de pantalla y sin nada encima
-  const sel = "a[href], button, input, select, summary, [role=radio]";
+  const sel = "a[href], button, input, select, textarea, summary, [role=radio]";
   document.querySelectorAll(sel).forEach((el) => {
     if (el.closest(".sr-only, .skip-link, [hidden]") || el.classList.contains("skip-link") || el.type === "file") return;
     if (hidden(el)) return;
@@ -103,8 +107,15 @@ function inspect({ route, pmv }) {
   window.scrollTo(0, 0);
 
   // E. Acciones principales alcanzables sin buscar
-  const inView = (el) => { if (!el) return false; const r = el.getBoundingClientRect(); return r.top >= -0.5 && r.bottom <= vh + 0.5 && r.width > 0; };
-  if (/^#\/registro\//.test(route) || route === "#/servicios") {
+  // a la vista Y sin nada encima (por ejemplo el menú inferior)
+  const inView = (el) => {
+    if (!el) return false;
+    const r = el.getBoundingClientRect();
+    if (!(r.top >= -0.5 && r.bottom <= vh + 0.5 && r.width > 0)) return false;
+    const hit = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+    return !!hit && (el.contains(hit) || hit.contains(el));
+  };
+  if (/^#\/registro\//.test(route) || route === "#/servicios" || route === "#/mi-perfil/editar") {
     if (!inView(document.querySelector(".cta-bar .btn-primary"))) issues.push("el botón principal (Continuar/Guardar/Publicar) no está visible sin desplazarse");
   }
   if (route === "#/prestador/p13" || route === "#/vista") {
@@ -191,7 +202,28 @@ for (const [w, h] of VIEWPORTS) {
         await page.keyboard.press("Escape");
       }
 
-      if (SHOTS) for (const [r, n] of [["#/", "inicio"], ["#/explorar", "explorar"], ["#/prestador/p13", "detalle"]]) {
+      // H. Hoja para dejar una opinión: estrellas, campos y botones alcanzables
+      await visit(page, "#/prestador/p13", false);
+      await page.locator("#add-review").click();
+      await page.waitForTimeout(300);
+      const rvIssues = await page.evaluate(() => {
+        const out = [], vw = innerWidth, vh = innerHeight, sh = document.querySelector(".sheet");
+        if (!sh) return ["la hoja de opinión no se abrió"];
+        for (const b of sh.querySelectorAll("button, input, textarea")) {
+          b.scrollIntoView({ block: "center" });
+          const r = b.getBoundingClientRect(), hit = document.elementFromPoint(r.left + r.width / 2, Math.min(Math.max(r.top + r.height / 2, 1), vh - 1));
+          const name = (b.getAttribute("aria-label") || b.textContent || b.id).trim().slice(0, 24);
+          if (r.left < 0 || r.right > vw || r.top < 0 || r.bottom > vh + 0.5 || !(b.contains(hit) || hit.contains(b))) out.push(`«${name}» de la hoja de opinión no es alcanzable`);
+          if (b.tagName === "BUTTON" && r.height < 47.5) out.push(`«${name}» mide ${Math.round(r.height)}px de alto`);
+        }
+        if (sh.scrollWidth > sh.clientWidth + 1) out.push("la hoja de opinión se desborda horizontalmente");
+        return out;
+      });
+      report(vp, "hoja de opinión", rvIssues);
+      if (SHOTS && (w === 360 || w === 1280)) await page.screenshot({ path: path.join(SHOTS, `r-opinion-${vp}.png`) });
+      await page.keyboard.press("Escape");
+
+      if (SHOTS) for (const [r, n] of [["#/", "inicio"], ["#/explorar", "explorar"], ["#/prestador/p13", "detalle"], ["#/mi-perfil/editar", "editar"], ["#/servicios", "fotos"]]) {
         await visit(page, r, false); await page.screenshot({ path: path.join(SHOTS, `r-${n}-${vp}.png`) });
       }
     }

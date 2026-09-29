@@ -14,70 +14,25 @@ FF.views = FF.views || {};
     '</div>';
   }
 
-  function errorLine(id) {
-    return '<p class="field-error" id="' + id + '" aria-live="polite">' + FF.ui.icon("alert", "icon-sm") + '<span></span></p>';
-  }
-
-  function setFieldError(field, input, msg) {
-    var p = field.querySelector(".field-error span");
-    if (msg) { p.textContent = msg; field.classList.add("has-error"); input.setAttribute("aria-invalid", "true"); }
-    else { p.textContent = ""; field.classList.remove("has-error"); input.removeAttribute("aria-invalid"); }
-  }
-
-  function radioChip(id, label, ic, checked, attr) {
-    return '<button type="button" class="chip" role="radio" aria-checked="' + checked + '" ' + attr + '="' + id + '">' +
-      (ic ? '<span class="chip-ic" aria-hidden="true">' + ic + '</span>' : '') + FF.ui.esc(label) + '</button>';
-  }
-
-  /* Selección única con botones role="radio" y teclado con flechas */
-  function bindRadios(root, selector, onPick) {
-    root.addEventListener("click", function (e) {
-      var b = e.target.closest(selector); if (!b) return;
-      var scope = b.closest("[role=radiogroup]") || root;
-      // los oficios están en varios grupos: se desmarcan todos los del mismo tipo
-      root.querySelectorAll(selector).forEach(function (x) { x.setAttribute("aria-checked", "false"); });
-      b.setAttribute("aria-checked", "true");
-      onPick(b, scope);
-    });
-  }
+  var errorLine = FF.ui.errorLine, setFieldError = FF.ui.setFieldError, radioChip = FF.ui.radioChip, bindRadios = FF.ui.bindRadios;
 
   var views = {
     paso1: {
-      title: "Paso 1 de 3 · Elige tu oficio · Frameflow",
+      title: "Paso 1 de 3 · Elige tus oficios · Frameflow",
       render: function () {
-        var r = FF.state.reg, esc = FF.ui.esc;
-        var groups = FF.data.groups.map(function (g, gi) {
-          var chips = FF.data.oficios.filter(function (o) { return o.grupo === g.id; }).map(function (o) {
-            return radioChip(o.id, o.nombre, o.ic, r.oficio === o.id, "data-oficio");
-          }).join("");
-          return '<div class="group" role="radiogroup" aria-labelledby="g' + gi + '"><h2 class="group-title" id="g' + gi + '">' + esc(g.nombre) + '</h2><div class="chips">' + chips + '</div></div>';
-        }).join("");
+        var r = FF.state.reg;
         return '<section class="view narrow step" data-step="1">' + stepBar(1, "#/") +
           '<h1 tabindex="-1">¿A qué te dedicas?</h1>' +
-          '<p class="lead">Elige tu oficio principal. Los clientes te encontrarán por él.</p>' +
-          '<form id="form" novalidate>' + groups +
-          '<div class="field other-field" id="other-field"' + (r.oficio === "otro" ? "" : " hidden") + '>' +
-            '<label for="oficio-otro">¿Cuál es tu oficio? (opcional)</label>' +
-            '<input class="input" id="oficio-otro" name="oficio-otro" maxlength="40" autocomplete="off" placeholder="Ejemplo: Jardinero" value="' + esc(r.oficioOtro) + '"></div>' +
-          '<p class="form-error" id="form-error" role="alert">' + FF.ui.icon("alert", "icon-sm") + '<span></span></p>' +
+          '<p class="lead">Elige hasta ' + FF.config.MAX_OFICIOS + ' oficios. Los clientes te encontrarán por cualquiera de ellos.</p>' +
+          '<form id="form" novalidate>' + FF.ui.oficioPicker(r.oficios, r.oficioOtro) +
           '<div class="cta-bar"><button class="btn btn-primary btn-block" type="submit">Continuar</button></div></form></section>';
       },
       mount: function (root) {
-        var r = FF.state.reg, form = root.querySelector("#form"), err = root.querySelector("#form-error");
-        bindRadios(form, "[data-oficio]", function (b) {
-          r.oficio = b.getAttribute("data-oficio");
-          err.classList.remove("show");
-          var other = root.querySelector("#other-field");
-          other.hidden = r.oficio !== "otro";
-          if (!other.hidden) root.querySelector("#oficio-otro").focus();
-        });
-        root.querySelector("#oficio-otro").addEventListener("input", function (e) { r.oficioOtro = e.target.value; });
+        var r = FF.state.reg, form = root.querySelector("#form");
+        var picker = FF.ui.bindOficioPicker(root, r);
         form.addEventListener("submit", function (e) {
           e.preventDefault();
-          if (!r.oficio) {
-            err.querySelector("span").textContent = "Elige tu oficio para continuar.";
-            err.classList.add("show"); return;
-          }
+          if (!r.oficios.length) { picker.say("Elige al menos un oficio para continuar."); return; }
           location.hash = "#/registro/2";
         });
       }

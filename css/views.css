@@ -60,7 +60,7 @@ body.pmv #app { background: #fff; }
 .step { min-height: calc(100vh - var(--header-h) - var(--nav-h)); min-height: calc(100dvh - var(--header-h) - var(--nav-h)); }
 .step form { flex: 1; }
 .cta-bar {
-  position: sticky; bottom: 0; z-index: 5; margin: auto -16px -32px; padding: 12px 16px calc(16px + env(safe-area-inset-bottom, 0px));
+  position: sticky; bottom: var(--nav-h); z-index: 5; margin: auto -16px -32px;   /* por encima del menú inferior cuando existe */ padding: 12px 16px calc(16px + env(safe-area-inset-bottom, 0px));
   background: linear-gradient(to top, var(--surface) 78%, rgba(255, 255, 255, 0));
 }
 .cta-stack { display: flex; flex-direction: column; gap: 10px; }
@@ -130,7 +130,8 @@ form { display: flex; flex-direction: column; gap: 16px; }
 .success .card-blue { text-align: left; display: grid; gap: 6px; }
 
 /* ---------- Pantalla 6 · Servicios y fotos ---------- */
-.slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 4px; }
+.slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 10px; margin-top: 4px; }
+.photo-count { font-size: var(--fs-label); color: var(--text-2-bg); margin-top: 4px; }
 .slot { position: relative; aspect-ratio: 1; border-radius: var(--radius); overflow: hidden; }
 .slot img { width: 100%; height: 100%; object-fit: cover; }
 .slot-add {
@@ -153,6 +154,7 @@ form { display: flex; flex-direction: column; gap: 16px; }
 .pitch { color: var(--text); margin-bottom: 4px; }
 .gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .gallery.mini { gap: 6px; }
+.gallery[data-collapsed="true"] > :nth-child(n+7) { display: none; }
 .ph {
   --h: 215; position: relative; aspect-ratio: 1; border-radius: 10px; overflow: hidden;
   background: hsl(var(--h) 55% 88%); color: hsl(var(--h) 60% 22%);
@@ -204,7 +206,8 @@ form { display: flex; flex-direction: column; gap: 16px; }
 .result-rate { margin-top: 6px; font-size: var(--fs-label); }
 .result-go { align-self: center; color: var(--blue); display: none; }
 @media (min-width: 400px) { .result-go { display: block; } }
-.rating { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+.rating { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 2px 4px; }
+.rating .muted { white-space: nowrap; }
 .rating .star { color: var(--star); display: inline-flex; }
 .rating .star svg { fill: currentColor; }
 .ad { border: 1.5px dashed var(--border); box-shadow: none; display: flex; flex-direction: column; gap: 6px; align-items: flex-start; grid-column: 1 / -1; }
@@ -280,4 +283,55 @@ form { display: flex; flex-direction: column; gap: 16px; }
   .success-icon, .closing-ic { display: none; }
   .detail-side { bottom: calc(var(--nav-h) + 4px); }
   .contact-card { padding: 8px; gap: 4px; }
+}
+
+/* ---------- Selector de oficios (hasta 5) ---------- */
+.oficio-picker { display: flex; flex-direction: column; gap: 4px; }
+.pick-count { font-size: var(--fs-label); color: var(--text-2-bg); margin-bottom: 8px; }
+.pick-count strong { color: var(--text); }
+.chip-main { font-size: var(--fs-label); font-weight: 600; padding: 0 8px; border-radius: 999px; background: #fff; color: var(--blue-dark); }
+.chip-main[hidden] { display: none; }
+
+/* ---------- Estrellas y opiniones ---------- */
+.stars { display: inline-flex; gap: 2px; vertical-align: middle; }
+.star-cell { position: relative; display: inline-block; width: 20px; height: 20px; }
+.star-svg { width: 100%; height: 100%; display: block; }
+.star-empty { color: #9CA3AF; }
+.star-fill { position: absolute; left: 0; top: 0; height: 100%; overflow: hidden; }
+.star-fill .star-svg { width: 20px; }
+.star-full { color: var(--star); fill: currentColor; }
+.stars-sm .star-cell { width: 16px; height: 16px; }
+.stars-sm .star-fill .star-svg { width: 16px; }
+.rating .stars { margin-right: 2px; }
+.star-picker { display: flex; gap: 2px; }
+.star-btn { width: var(--tap); height: var(--tap); padding: 6px; border: 0; border-radius: 10px; background: transparent; color: #6B7280; cursor: pointer; }
+.star-btn .star-svg { fill: none; }
+.star-btn[data-on="true"] { color: var(--star); }
+.star-btn[data-on="true"] .star-svg { fill: currentColor; }
+.star-btn:active { background: var(--blue-light); }
+.rv-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+.rv-summary { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
+.rv-avg { font-size: 40px; font-weight: 700; line-height: 1; }
+.reviews { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 14px; }
+.review { display: grid; gap: 6px; border-top: 1px solid var(--border); padding-top: 12px; overflow-wrap: anywhere; }
+.review[hidden] { display: none; }
+.rv-head { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 10px; }
+textarea.input { min-height: 104px; resize: vertical; line-height: 1.4; }
+
+/* ---------- Paginación de Explorar (máximo 20 por página) ---------- */
+.pager { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 18px; }
+.pager .btn { min-width: 110px; }
+.pager-info { font-size: var(--fs-label); font-weight: 500; color: var(--text-2-bg); text-align: center; }
+
+/* En modo prueba el flujo va siempre en una columna, aunque la pantalla sea ancha */
+body.pmv .detail-grid { display: flex; flex-direction: column; }
+body.pmv .detail-side { position: sticky; top: auto; bottom: 8px; z-index: 10; }
+body.pmv .desk-only { display: none; }
+body.pmv .contact-card { padding: 12px; gap: 6px; }
+
+/* Celular en horizontal: el contacto va en una sola fila para no tapar el contenido */
+@media (max-height: 500px) {
+  .contact-card { flex-direction: row; align-items: center; gap: 8px; }
+  .contact-card .btn-wa { flex: 1; }
+  .contact-tools { flex: none; }
 }

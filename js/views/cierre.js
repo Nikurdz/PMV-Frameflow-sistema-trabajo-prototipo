@@ -7,7 +7,7 @@ FF.views.cierre = {
 
   render: function () {
     var ui = FF.ui, cfg = FF.config, p = FF.store.own() || FF.state.lastProvider;
-    var oficio = p ? FF.data.oficioNombre(p) : "";
+    var oficio = p ? FF.data.oficiosNombres(p).join(", ") : "";
     var interes = FF.waLink(cfg.WHATSAPP_EQUIPO, cfg.MSG_INTERES + oficio);
     var recomendar = FF.waLink("", cfg.MSG_RECOMENDAR + " " + FF.prototypeUrl());
     var extra = FF.mode.pmv

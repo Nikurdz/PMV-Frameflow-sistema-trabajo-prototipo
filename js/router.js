@@ -35,7 +35,7 @@ window.FF = window.FF || {};
       case "cierre": return { id: "cierre", view: V.cierre };
       case "explorar": return { id: "explorar", view: V.explorar };
       case "oficios": return { id: "oficios", view: V.oficios };
-      case "mi-perfil": return { id: "miperfil", view: V.miperfil };
+      case "mi-perfil": return { id: "miperfil", view: route.parts[1] === "editar" ? V.editar : V.miperfil };
       case "como-funciona": return { id: "comofunciona", view: V.comofunciona };
       case "prestador": return { id: "explorar", view: V.prestador };
       default: return null;
@@ -48,7 +48,7 @@ window.FF = window.FF || {};
   function stepGuard(route) {
     if (route.parts[0] !== "registro") return null;
     var r = FF.state.reg, n = route.parts[1];
-    if ((n === "2" || n === "3") && !r.oficio) return "#/registro/1";
+    if ((n === "2" || n === "3") && !r.oficios.length) return "#/registro/1";
     if (n === "3" && !(FF.validate.nombre(r.nombre).ok && r.zona)) return "#/registro/2";
     return null;
   }

@@ -9,7 +9,7 @@ FF.views.oficios = {
     var esc = FF.ui.esc;
     var own = FF.store.own();
     var count = {};
-    FF.data.providers.concat(own ? [own] : []).forEach(function (p) { count[p.oficio] = (count[p.oficio] || 0) + 1; });
+    FF.data.providers.concat(own ? [own] : []).forEach(function (p) { p.oficios.forEach(function (id) { count[id] = (count[id] || 0) + 1; }); });
 
     var groups = FF.data.groups.map(function (g) {
       var tiles = FF.data.oficios.filter(function (o) { return o.grupo === g.id; }).map(function (o) {

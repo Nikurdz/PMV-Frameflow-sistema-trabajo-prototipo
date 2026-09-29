@@ -27,7 +27,11 @@ La regla del curso (R-02) exige **tres características, ni una más**, para la 
 | Registro gratis en 3 pasos (pantallas 1–4) | **PMV** | RF-01 a RF-08, RF-38 |
 | Perfil publicado con servicios y fotos (pantallas 5–7) | **PMV** | RF-12, RF-14, RF-15, RF-18, RF-19 |
 | Contacto directo y compromiso por WhatsApp (pantallas 7–8) | **PMV** | RF-24, RF-31, RF-32, RF-33 |
-| Explorar: búsqueda, filtros y orden | Visión MVP, *demostrativo* | RF-20, RF-21, RF-22, RF-23 |
+| Hasta 5 oficios por trabajador (el primero es el principal) | **PMV** (paso 1 del registro) | RF-03 (ampliado; RN-03 se relaja) |
+| Explorar: búsqueda, filtros, orden y páginas de 20 | Visión MVP, *demostrativo* | RF-20, RF-21, RF-22, RF-23 |
+| Editar perfil (oficios, nombre, zona, WhatsApp) | Visión MVP, *demostrativo* | RF-09 |
+| Fotos: hasta 12, con compresión | Visión MVP, *demostrativo* (en PMV siguen siendo opcionales) | RF-15, RF-16 |
+| Opiniones con 5 estrellas, trabajo realizado y comentario | Visión MVP, *demostrativo* | RF-29 (adelantado) |
 | Reportar perfil, compartir, publicidad marcada | Visión MVP, *demostrativo* | RF-30, RN-07 |
 
 ## Mapa del sitio
@@ -37,14 +41,27 @@ Inicio ─┬─ Crear mi perfil ─ Paso 1 oficio ─ Paso 2 datos ─ Paso 3 W
         │                                                        ├─ Agregar servicios ─┐
         │                                                        └─ Omitir ────────────┴─ Vista del cliente ─ Cierre (WhatsApp)
         └─ Busco un trabajador ─ Explorar ─ Detalle del prestador ─ Contactar ─ Cierre (WhatsApp)
+Mi perfil ─ Editar mi perfil · Editar servicios y fotos · Ver como cliente
 Menú general: Inicio · Explorar · Oficios · Mi perfil · Cómo funciona
 ```
 
-Los campos **aceptan escritura real** y validan (nombre y apellido; WhatsApp `09XXXXXXXX` o `+5939XXXXXXXX`). El perfil publicado usa los datos escritos. En modo presentación se guarda en el navegador; en modo prueba cada carga empieza limpia.
+Los campos **aceptan escritura real** y validan (nombre y apellido; WhatsApp `09XXXXXXXX` o `+5939XXXXXXXX`). El perfil publicado usa los datos escritos. En modo presentación el perfil, sus fotos y las opiniones se guardan en el navegador; en modo prueba cada carga empieza limpia.
+
+### Límites del producto (`js/config.js`)
+
+| Constante | Valor | Qué controla |
+|---|---|---|
+| `MAX_OFICIOS` | 5 | Oficios que puede elegir un trabajador. El primero es el principal; el sexto se bloquea con un aviso. |
+| `MAX_FOTOS` | 12 | Fotos de trabajos por perfil. Se comprimen al subir (lado mayor 900 px, JPEG). |
+| `PAGE_SIZE` | 20 | Prestadores por página en Explorar (Anterior/Siguiente, `pag` en la URL): nunca se dibujan más a la vez. |
+| `MAX_COMENTARIO` | 300 | Letras de una opinión. |
+
+### Opiniones (demostrativo)
+Cualquier visitante puede dejar una opinión en un perfil: calificación de 1 a 5 estrellas, nombre, **qué trabajo realizó** y comentario. Se guardan en el navegador. La calificación mostrada combina la de muestra del prestador (ponderada por su cantidad de opiniones) con las nuevas. Solo se ven en modo presentación. En la app real RN-08 exigiría haber contactado al trabajador.
 
 ## Datos de ejemplo
 
-Los **33 prestadores** de Explorar son ficticios y genéricos (17 oficios, 4 zonas). Sus calificaciones y cantidad de trabajos son de muestra (las reseñas reales son fase Futura, RF-29). Las fotos son cuadros de reemplazo: **no hay imágenes de IA ni de terceros** (RN-05). Los prestadores de ejemplo **no tienen teléfono**: "Contactar por WhatsApp" lleva a la pantalla "¿Quieres probar la app real?", para que el prototipo nunca escriba a una persona real. Solo esa pantalla abre enlaces `wa.me` reales.
+Los **33 prestadores** de Explorar son ficticios y genéricos (17 oficios, 4 zonas). Sus calificaciones, cantidad de opiniones y las 2 opiniones de cada perfil son de muestra; algunos tienen 2 o 3 oficios. Las fotos son cuadros de reemplazo: **no hay imágenes de IA ni de terceros** (RN-05). Los prestadores de ejemplo **no tienen teléfono**: "Contactar por WhatsApp" lleva a la pantalla "¿Quieres probar la app real?", para que el prototipo nunca escriba a una persona real. Solo esa pantalla abre enlaces `wa.me` reales.
 
 ## Configuración (`js/config.js`)
 

@@ -10,6 +10,12 @@ FF.config = {
      Si se deja vacío se calcula desde la URL actual, en modo prueba (?pmv=1). */
   PROTOTYPE_URL: "",
 
+  /* Límites del producto */
+  MAX_OFICIOS: 5,        // oficios que puede elegir un trabajador (el primero es el principal)
+  MAX_FOTOS: 12,         // fotos de trabajos por perfil
+  PAGE_SIZE: 20,         // prestadores por página en Explorar
+  MAX_COMENTARIO: 300,   // letras de una opinión
+
   /* Mensajes predeterminados (sec. 12.5) */
   MSG_INTERES: "Hola, quiero probar Frameflow cuando esté lista. Mi oficio es: ",
   MSG_RECOMENDAR: "Mira esta app gratis para publicar tu oficio y conseguir clientes en Quito:"

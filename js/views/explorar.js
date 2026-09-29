@@ -6,7 +6,8 @@ FF.views = FF.views || {};
   var ui = FF.ui, esc = ui.esc;
 
   var MIN_OPTS = [{ v: 0, l: "Todas" }, { v: 3, l: "3 ★ o más" }, { v: 4, l: "4 ★ o más" }, { v: 4.5, l: "4,5 ★ o más" }];
-  var SORTS = [{ v: "rating", l: "Mejor calificación" }, { v: "trabajos", l: "Más trabajos" }, { v: "nombre", l: "Nombre (A–Z)" }];
+  var SORTS = [{ v: "rating", l: "Mejor calificación" }, { v: "trabajos", l: "Más opiniones" }, { v: "nombre", l: "Nombre (A–Z)" }];
+  var PAGE = FF.config.PAGE_SIZE;
   var MODS = [{ v: "", l: "Cualquiera" }, { v: "domicilio", l: "A domicilio" }, { v: "local", l: "En su local" }];
 
   function norm(s) { return String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase(); }
@@ -21,7 +22,7 @@ FF.views = FF.views || {};
   }
 
   function haystack(p) {
-    return norm([p.nombre, FF.data.oficioNombre(p), p.servicios.join(" "), FF.data.zonaLargo(p.zona)].join(" "));
+    return norm([p.nombre, FF.data.oficiosNombres(p).join(" "), p.servicios.join(" "), FF.data.zonaLargo(p.zona)].join(" "));
   }
 
   function all() {
@@ -33,12 +34,11 @@ FF.views = FF.views || {};
   function filter(f) {
     var tokens = norm(f.q).split(/\s+/).filter(Boolean);
     var list = all().filter(function (p) {
-      var o = FF.data.oficio(p.oficio);
-      if (f.cat && (!o || o.grupo !== f.cat)) return false;
-      if (f.of && p.oficio !== f.of) return false;
+      if (f.cat && !p.oficios.some(function (id) { var o = FF.data.oficio(id); return o && o.grupo === f.cat; })) return false;
+      if (f.of && p.oficios.indexOf(f.of) < 0) return false;
       if (f.zona && p.zona !== f.zona) return false;
       if (f.mod && p.modalidad.indexOf(f.mod) < 0) return false;
-      if (f.min && (p.rating || 0) < f.min) return false;
+      if (f.min && (FF.reviews.rating(p) || 0) < f.min) return false;
       if (f.foto && !(p.fotos > 0)) return false;
       if (tokens.length) {
         var h = haystack(p);
@@ -49,8 +49,9 @@ FF.views = FF.views || {};
     list.sort(function (a, b) {
       if (a.own !== b.own) return a.own ? -1 : 1;             // tu perfil siempre primero
       if (f.orden === "nombre") return a.nombre.localeCompare(b.nombre, "es");
-      if (f.orden === "trabajos") return (b.trabajos - a.trabajos) || ((b.rating || 0) - (a.rating || 0));
-      return ((b.rating || 0) - (a.rating || 0)) || (b.trabajos - a.trabajos);
+      var ra = FF.reviews.rating(a) || 0, rb = FF.reviews.rating(b) || 0, ca = FF.reviews.count(a), cb = FF.reviews.count(b);
+      if (f.orden === "trabajos") return (cb - ca) || (rb - ra);
+      return (rb - ra) || (cb - ca);
     });
     return list;
   }
@@ -65,6 +66,7 @@ FF.views = FF.views || {};
     if (q.min && MIN_OPTS.some(function (m) { return String(m.v) === q.min; })) d.min = parseFloat(q.min);
     if (q.foto === "1") d.foto = true;
     if (q.orden && SORTS.some(function (s) { return s.v === q.orden; })) d.orden = q.orden;
+    if (/^\d+$/.test(q.pag || "") && +q.pag > 1) d.pag = +q.pag;
     return d;
   }
 
@@ -72,6 +74,7 @@ FF.views = FF.views || {};
     var d = FF.store.defaultFilters(), p = new URLSearchParams();
     ["q", "cat", "of", "zona", "mod", "min", "orden"].forEach(function (k) { if (f[k] && f[k] !== d[k]) p.set(k, f[k]); });
     if (f.foto) p.set("foto", "1");
+    if (f.pag > 1) p.set("pag", f.pag);
     var s = p.toString();
     return "#/explorar" + (s ? "?" + s : "");
   }
@@ -116,6 +119,30 @@ FF.views = FF.views || {};
     '</aside>';
   }
 
+  /* Nunca se dibujan más de PAGE_SIZE (20) prestadores a la vez */
+  function pageOf(list, f) {
+    var pages = Math.max(1, Math.ceil(list.length / PAGE));
+    f.pag = Math.min(Math.max(1, f.pag), pages);
+    return { items: list.slice((f.pag - 1) * PAGE, f.pag * PAGE), pages: pages };
+  }
+
+  function pagerHtml(f, pages) {
+    if (pages < 2) return "";
+    return '<nav class="pager" aria-label="Páginas de resultados">' +
+      '<button type="button" class="btn btn-secondary" data-page="prev"' + (f.pag <= 1 ? " disabled" : "") + '>Anterior</button>' +
+      '<span class="pager-info" aria-current="page">Página ' + f.pag + ' de ' + pages + '</span>' +
+      '<button type="button" class="btn btn-secondary" data-page="next"' + (f.pag >= pages ? " disabled" : "") + '>Siguiente</button></nav>';
+  }
+
+  function countText(f, total, shown) {
+    var zona = f.zona ? " en " + FF.data.zona(f.zona).largo : " en Quito";
+    if (total > shown.length) {
+      var from = (f.pag - 1) * PAGE + 1;
+      return "Mostrando " + from + "–" + (from + shown.length - 1) + " de " + total + " prestadores" + zona;
+    }
+    return total + (total === 1 ? " prestador" : " prestadores") + zona;
+  }
+
   function resultsHtml(list) {
     if (!list.length) {
       return '<div class="card empty"><span class="empty-ic" aria-hidden="true">' + ui.icon("search", "icon-xl") + '</span>' +
@@ -139,7 +166,7 @@ FF.views = FF.views || {};
 
     render: function (route) {
       var f = FF.state.filters = parse(route.query);
-      var list = filter(f);
+      var list = filter(f), pg = pageOf(list, f);
       return '<section class="view explorar"><div class="container">' +
         '<div class="page-head"><h1 tabindex="-1">Explorar prestadores</h1>' +
         '<span class="tag tag-warn">Datos de ejemplo</span></div>' +
@@ -153,8 +180,9 @@ FF.views = FF.views || {};
         '</div>' +
         '<div class="explorar-grid">' + panel(f) + '<div class="filters-backdrop" id="f-backdrop"></div>' +
           '<div class="explorar-main"><div class="chips active-chips" id="f-active"></div>' +
-            '<p class="count on-bg" id="f-count" role="status" aria-live="polite"></p>' +
-            '<div class="results-grid" id="results">' + resultsHtml(list) + '</div></div>' +
+            '<p class="count on-bg" id="f-count" role="status" aria-live="polite">' + countText(f, list.length, pg.items) + '</p>' +
+            '<div class="results-grid" id="results">' + resultsHtml(pg.items) + '</div>' +
+            '<div id="f-pager">' + pagerHtml(f, pg.pages) + '</div></div>' +
         '</div></div></section>';
     },
 
@@ -177,10 +205,11 @@ FF.views = FF.views || {};
       }
 
       function update() {
-        var list = filter(f), act = activeList(f);
-        $("#results").innerHTML = resultsHtml(list);
+        var list = filter(f), act = activeList(f), pg = pageOf(list, f);
+        $("#results").innerHTML = resultsHtml(pg.items);
+        $("#f-pager").innerHTML = pagerHtml(f, pg.pages);
         var n = list.length;
-        $("#f-count").textContent = n + (n === 1 ? " prestador" : " prestadores") + (f.zona ? " en " + FF.data.zona(f.zona).largo : " en Quito");
+        $("#f-count").textContent = countText(f, n, pg.items);
         $("#f-active").innerHTML = act.map(function (a) {
           return '<button type="button" class="chip chip-removable" data-rm="' + a.k + '" aria-label="Quitar filtro: ' + esc(a.l) + '">' + esc(a.l) + ' ' + ui.icon("close", "icon-sm") + '</button>';
         }).join("");
@@ -200,9 +229,9 @@ FF.views = FF.views || {};
         update();
       }
 
-      $("#f-q").addEventListener("input", function (e) { f.q = e.target.value; update(); });
-      $("#f-sort").addEventListener("change", function (e) { f.orden = e.target.value; update(); });
-      $("#f-of").addEventListener("change", function (e) { f.of = e.target.value; update(); });
+      $("#f-q").addEventListener("input", function (e) { f.q = e.target.value; f.pag = 1; update(); });
+      $("#f-sort").addEventListener("change", function (e) { f.orden = e.target.value; f.pag = 1; update(); });
+      $("#f-of").addEventListener("change", function (e) { f.of = e.target.value; f.pag = 1; update(); });
       $("#f-open").addEventListener("click", openPanel);
       $("#f-close").addEventListener("click", closePanel);
       $("#f-apply").addEventListener("click", closePanel);
@@ -211,8 +240,16 @@ FF.views = FF.views || {};
       root.addEventListener("keydown", function (e) { if (e.key === "Escape") closePanel(); });
 
       root.addEventListener("click", function (e) {
+        var pgBtn = e.target.closest("[data-page]");
+        if (pgBtn) {
+          f.pag += pgBtn.getAttribute("data-page") === "next" ? 1 : -1;
+          update();
+          $("#f-count").scrollIntoView({ block: "start" });
+          return;
+        }
         var b = e.target.closest("[data-f]");
         if (b) {
+          f.pag = 1;
           var k = b.getAttribute("data-f"), v = b.getAttribute("data-v");
           if (k === "foto") f.foto = !f.foto;
           else if (k === "min") f.min = parseFloat(v);
@@ -223,7 +260,7 @@ FF.views = FF.views || {};
           update(); return;
         }
         var rm = e.target.closest("[data-rm]");
-        if (rm) { var key = rm.getAttribute("data-rm"); f[key] = key === "foto" ? false : key === "min" ? 0 : ""; update(); return; }
+        if (rm) { f.pag = 1; var key = rm.getAttribute("data-rm"); f[key] = key === "foto" ? false : key === "min" ? 0 : ""; update(); return; }
         if (e.target.closest("[data-clear]")) clear();
       });
 
