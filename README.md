@@ -68,7 +68,7 @@ Los **33 prestadores** de Explorar son ficticios y genéricos (17 oficios, 4 zon
 | Constante | Qué hacer |
 |---|---|
 | `WHATSAPP_EQUIPO` | Número del equipo en formato internacional sin `+` (hoy `593995961669`). Vacío = WhatsApp deja elegir el chat. Queda visible en el código público (limitación L-07). |
-| `PROTOTYPE_URL` | Enlace público del prototipo para "Recomendar a otra persona". Vacío = se calcula desde la URL actual con `?pmv=1`. |
+| `PROTOTYPE_URL` | Enlace público del prototipo para "Recomendar a otra persona". Vacío = se calcula desde la URL actual, sin parámetros (enlace principal de la página). |
 
 ## Diseño y accesibilidad
 

@@ -189,7 +189,7 @@ section("1. Flujo PMV en 360×800 (?pmv=1)");
   const interes = await page.locator("#interes").getAttribute("href");
   const recomendar = await page.locator("#recomendar").getAttribute("href");
   ok("Pantalla 8: 'Sí, quiero probarla' abre wa.me con el mensaje predeterminado", interes.startsWith("https://wa.me/593995961669?text=") && decodeURIComponent(interes.split("?text=")[1]) === "Hola, quiero probar Frameflow cuando esté lista. Mi oficio es: Manicurista", interes);
-  ok("Pantalla 8: 'Recomendar' abre wa.me sin número y con el enlace del prototipo", recomendar.startsWith("https://wa.me/?text=") && decodeURIComponent(recomendar.split("?text=")[1]).startsWith("Mira esta app gratis para publicar tu oficio y conseguir clientes en Quito: ") && decodeURIComponent(recomendar).includes("?pmv=1"), recomendar);
+  ok("Pantalla 8: 'Recomendar' abre wa.me sin número y con el enlace del prototipo", recomendar.startsWith("https://wa.me/?text=") && decodeURIComponent(recomendar.split("?text=")[1]).startsWith("Mira esta app gratis para publicar tu oficio y conseguir clientes en Quito: ") && !decodeURIComponent(recomendar).includes("?pmv=1"), recomendar);
   ok("Pantalla 8: los enlaces se abren en pestaña nueva", (await page.locator("#interes").getAttribute("target")) === "_blank" && (await page.locator("#recomendar").getAttribute("rel")).includes("noopener"));
   await audit(page, "P8");
   await shot(page, "p8-cierre");

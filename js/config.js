@@ -7,7 +7,7 @@ FF.config = {
   WHATSAPP_EQUIPO: "593995961669",
 
   /* Enlace público del prototipo que se envía en "Recomendar a otra persona".
-     Si se deja vacío se calcula desde la URL actual, en modo prueba (?pmv=1). */
+     Si se deja vacío se calcula desde la URL actual: enlace principal de la página, sin parámetros. */
   PROTOTYPE_URL: "",
 
   /* Límites del producto */
@@ -29,7 +29,7 @@ FF.waLink = function (numero, texto) {
 
 FF.prototypeUrl = function () {
   if (FF.config.PROTOTYPE_URL) return FF.config.PROTOTYPE_URL;
-  return location.origin + location.pathname + "?pmv=1";
+  return location.origin + location.pathname;
 };
 
 /* Modos: ?pmv=1 = prueba con el segmento (solo las 8 pantallas). ?observer=1 = cronómetro del observador. */
