@@ -5,10 +5,20 @@ Emprendimiento Tecnológico · NRC 2667 · PUCE · Elaborado por **David Tapia**
 
 Prototipo web, **responsivo** y sin dependencias (HTML + CSS + JavaScript). Traslada a la web el prototipo de Figma *PMV Frameflow v1* descrito en el *Levantamiento de Requerimientos* (sec. 12) y lo amplía con una visión del producto completo para presentarlo.
 
+## Probar el prototipo
+
+| Qué | Enlace |
+|---|---|
+| **Presentación** (visión completa) | [https://nikurdz.github.io/PMV-Frameflow-sistema-trabajo-prototipo/](https://nikurdz.github.io/PMV-Frameflow-sistema-trabajo-prototipo/) |
+| **Prueba PMV** (las 8 pantallas, para el segmento) | [https://nikurdz.github.io/PMV-Frameflow-sistema-trabajo-prototipo/?pmv=1](https://nikurdz.github.io/PMV-Frameflow-sistema-trabajo-prototipo/?pmv=1) |
+| Prueba PMV con observador | [https://nikurdz.github.io/PMV-Frameflow-sistema-trabajo-prototipo/?pmv=1&observer=1](https://nikurdz.github.io/PMV-Frameflow-sistema-trabajo-prototipo/?pmv=1&observer=1) |
+
+Conviene abrirlo en el celular. Se publica con GitHub Pages desde este repositorio.
+
 ## Cómo verlo
 
 - **Local:** abre `index.html` con doble clic, o levanta un servidor: `npx serve .`
-- **Publicarlo:** en GitHub, *Settings → Pages → Deploy from a branch* y elige la rama. El enlace resultante se puede poner en `PROTOTYPE_URL` (ver "Configuración").
+- **Publicarlo:** en GitHub, *Settings → Pages → Deploy from a branch* y elige la rama. El enlace resultante (hoy `https://nikurdz.github.io/PMV-Frameflow-sistema-trabajo-prototipo/`) se puede poner en `PROTOTYPE_URL` (ver "Configuración").
 
 ## Dos modos del mismo sitio
 
